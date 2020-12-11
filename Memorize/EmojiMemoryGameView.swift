@@ -15,7 +15,12 @@ struct EmojiMemoryGameView: View {
             Text(EmojiMemoryGame.currentTheme?.name ?? "Memorize")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .padding(.top)
+                .padding()
+                .font(.title)
+                .layoutPriority(10)
+            Text("Time: " + String(viewModel.timeSpent) + "s    ")
+                .font(.title) +
+            Text("Score: " + String(viewModel.score))
                 .font(.title)
             Grid(viewModel.cards) { card in
                 CardView(card: card).onTapGesture {
@@ -25,7 +30,9 @@ struct EmojiMemoryGameView: View {
                 .padding(5)
             }
             .padding()
-            .foregroundColor(EmojiMemoryGame.currentTheme?.color ?? .black)
+            .foregroundColor( EmojiMemoryGame.currentTheme?.color ?? .black )
+            .layoutPriority(10)
+            
             Button(action: viewModel.startNewGame) {
                 Text("New game")
                     .fontWeight(.bold)
@@ -45,6 +52,7 @@ struct EmojiMemoryGameView: View {
                         )
                     .padding(.bottom)
             }
+            .layoutPriority(10)
         }
     }
 }
@@ -66,7 +74,11 @@ struct CardView: View {
                 RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
             } else {
                 if !card.isMatched {
-                    RoundedRectangle(cornerRadius: cornerRadius).fill()
+                    if EmojiMemoryGame.currentTheme?.color == nil {
+                        RoundedRectangle(cornerRadius: cornerRadius).fill(LinearGradient(gradient: Gradient(colors: [.red, .blue]), startPoint: .top, endPoint: .trailing))
+                    } else {
+                        RoundedRectangle(cornerRadius: cornerRadius).fill()
+                    }
                 }
             }
         }

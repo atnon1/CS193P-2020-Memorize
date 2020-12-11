@@ -9,10 +9,10 @@ import SwiftUI
 
 struct MemoryGameTheme<Content> {
     var name: String
-    var color: Color
+    var color: Color?
     var contentSet: [Content]
     var cardPairsNumber: Int?
-    init (_ name: String, color: Color, contentSet: [Content], cardPairsNumber: Int? = nil) {
+    init (_ name: String, color: Color?, contentSet: [Content], cardPairsNumber: Int? = nil) {
         self.name = name
         self.color = color
         self.contentSet = contentSet
@@ -28,7 +28,7 @@ class EmojiMemoryGame: ObservableObject {
         var themes = [MemoryGameTheme("Halloween", color: .orange, contentSet: ["👻","🎃","🕷","🕯","😨","😱","🌒","🧟‍♀️","🦇","☠️","⚰️","🩸","🔪","🕸","🧛🏻‍♂️"])]
         themes.append(MemoryGameTheme("Sports", color: .blue, contentSet: ["⚽️","🏀","🏈","⚾️","🎾","🏐","🥏","🏓","🏒","🥊","🚴‍♀️","🏊‍♀️","⛷","🏂","🏄‍♀️"], cardPairsNumber: 4))
         themes.append(MemoryGameTheme("Animals", color: .yellow, contentSet: ["🐶","🐱","🐭","🐹","🦊","🐻","🐷","🐮","🦁","🐯","🐨","🐼","🐵","🐧","🐣","🦉","🐗","🐴","🐺","🦑","🐙","🦩","🦥","🦨","🐿","🦔","🦃","🐏","🦙","🐐","🦌","🐓"]))
-        themes.append(MemoryGameTheme("Flags", color: .gray, contentSet: ["🇦🇲","🇦🇷","🇦🇿","🇨🇴","🇨🇮","🇪🇬","🇪🇺","🇫🇮","🇫🇷","🇬🇷","🇬🇧","🏴󠁧󠁢󠁥󠁮󠁧󠁿","🇹🇷","🇺🇦","🏴󠁧󠁢󠁷󠁬󠁳󠁿","🇰🇷","🇯🇵","🇧🇬","🇨🇳","🇷🇺","🇧🇷","🇧🇪"], cardPairsNumber: 7))
+        themes.append(MemoryGameTheme("Flags", color: nil, contentSet: ["🇦🇲","🇦🇷","🇦🇿","🇨🇴","🇨🇮","🇪🇬","🇪🇺","🇫🇮","🇫🇷","🇬🇷","🇬🇧","🏴󠁧󠁢󠁥󠁮󠁧󠁿","🇹🇷","🇺🇦","🏴󠁧󠁢󠁷󠁬󠁳󠁿","🇰🇷","🇯🇵","🇧🇬","🇨🇳","🇷🇺","🇧🇷","🇧🇪"], cardPairsNumber: 7))
         themes.append(MemoryGameTheme("Happy New Year", color: .red, contentSet: ["🎅","🌟","❄️","⛄️","🎁","🍪","🥛","🎄","🤶","🎆","🥂","🕛",], cardPairsNumber: 3))
         themes.append(MemoryGameTheme("Fruits&Vegs", color: .green, contentSet: ["🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🍈","🍒","🍑","🥭","🍍","🥥","🥝","🍅","🍆","🥑","🥦","🥬","🥒","🌶","🌽","🥕","🧄","🧅","🥔"]))
         return themes
@@ -51,6 +51,13 @@ class EmojiMemoryGame: ObservableObject {
         model.cards
     }
     
+    var timeSpent: Int {
+        model.timeSpent
+    }
+    
+    var score: Int {
+        model.score
+    }
     // MARK: - Intent(s)
     
     func choose(card: MemoryGame<String>.Card) {
