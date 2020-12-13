@@ -2,7 +2,7 @@
 //  Array+Identifiable.swift
 //  Memorize
 //
-//  Created by Admin on 05.12.2020.
+//  Created by Anton Makeev on 05.12.2020.
 //
 
 import Foundation

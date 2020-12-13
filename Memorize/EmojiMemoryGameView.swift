@@ -2,7 +2,7 @@
 //  EmojiMemoryGameView.swift
 //  Memorize
 //
-//  Created by Admin on 29.11.2020.
+//  Created by Anton Makeev on 29.11.2020.
 //
 
 import SwiftUI
@@ -11,50 +11,73 @@ struct EmojiMemoryGameView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
+        let defaultColor: Color = (colorScheme == ColorScheme.dark ? .black : .white)
+        let oppositeDefaultColor: Color = (colorScheme == ColorScheme.dark ? .white : .black)
         VStack {
             Text(EmojiMemoryGame.currentTheme?.name ?? "Memorize")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .padding()
+                .padding(smallPadding)
                 .font(.title)
-                .layoutPriority(10)
-            Text("Time: " + String(viewModel.timeSpent) + "s    ")
+                .layoutPriority(lowPriority)
+            
+            (Text("Time: \(viewModel.timeSpent, specifier: "%.1f")s    ")
                 .font(.title) +
-            Text("Score: " + String(viewModel.score))
+            Text("Score: \(viewModel.score)")
                 .font(.title)
+                )
+            .padding(smallPadding)
+            .layoutPriority(lowPriority)
+            
+            
             Grid(viewModel.cards) { card in
                 CardView(card: card).onTapGesture {
                     viewModel.choose(card: card)
                 }
-                //.aspectRatio(2/3, contentMode: .fit)
-                .padding(5)
+                .aspectRatio(4/5, contentMode: .fit)
+                .padding(cardsPadding)
             }
-            .padding()
-            .foregroundColor( EmojiMemoryGame.currentTheme?.color ?? .black )
-            .layoutPriority(10)
+            .padding(smallPadding)
+            .foregroundColor( EmojiMemoryGame.currentTheme?.color ?? defaultColor)
+            .layoutPriority(highPriority)
             
             Button(action: viewModel.startNewGame) {
                 Text("New game")
                     .fontWeight(.bold)
                     .padding()
-                    .background(EmojiMemoryGame.currentTheme?.color ?? .black)
-                    .foregroundColor(.white)
+                    .background(EmojiMemoryGame.currentTheme?.color ?? oppositeDefaultColor)
+                    .foregroundColor(defaultColor)
                     .font(.title)
-                    .cornerRadius(30)
+                    .cornerRadius(buttonCornerRadius)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.white, lineWidth: 5)
+                        RoundedRectangle(cornerRadius: buttonCornerRadius)
+                            .stroke(defaultColor, lineWidth: buttonStrokeWidth)
                         )
-                    .padding(5)
+                    .padding(buttonDrawPadding)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 40)
-                            .stroke(EmojiMemoryGame.currentTheme?.color ?? .black, lineWidth: 5)
+                        RoundedRectangle(cornerRadius: buttonCornerRadius+10)
+                            .stroke(EmojiMemoryGame.currentTheme?.color ?? oppositeDefaultColor, lineWidth: buttonStrokeWidth)
                         )
                     .padding(.bottom)
             }
-            .layoutPriority(10)
+            .layoutPriority(lowPriority)
+            .padding(.top, smallPadding)
         }
     }
+    
+    //MARK: - Drawing Constants
+    
+    let buttonCornerRadius: CGFloat = 40.0
+    let buttonStrokeWidth: CGFloat = 5.0
+    let buttonDrawPadding: CGFloat = 5.0
+    let cardsPadding: CGFloat = 5.0
+    let smallPadding: CGFloat = 2.0
+    let highPriority: Double = 100.0
+    let middlePriority: Double = 50.0
+    let lowPriority: Double = 10.0
+    let gradientColor = LinearGradient(gradient: Gradient(colors: [.red, .blue]), startPoint: .top, endPoint: .trailing)
+    @Environment(\.colorScheme) var colorScheme
+ //   var defaultColor: Color? = (colorScheme == ColorScheme.dark ? .white : .black)
 }
 
 struct CardView: View {
@@ -66,40 +89,51 @@ struct CardView: View {
         }
     }
     
-    func body(for size: CGSize) -> some View {
-        ZStack {
-            if card.isFaceUp {
-                RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
-                Text(card.content)
-                RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
+    @ViewBuilder
+    private func body(for size: CGSize) -> some View {
+        
+        let cardView = ZStack {
+            if EmojiMemoryGame.currentTheme?.color == nil {
+                pieCounter
+                    .fill(gradientColor)
+                    .padding(piePadding)
+                    .opacity(pieOpacity)
             } else {
-                if !card.isMatched {
-                    if EmojiMemoryGame.currentTheme?.color == nil {
-                        RoundedRectangle(cornerRadius: cornerRadius).fill(LinearGradient(gradient: Gradient(colors: [.red, .blue]), startPoint: .top, endPoint: .trailing))
-                    } else {
-                        RoundedRectangle(cornerRadius: cornerRadius).fill()
-                    }
-                }
+                pieCounter
+                    .padding(piePadding)
+                    .opacity(pieOpacity)
+            }
+            Text(card.content)
+                .font(.system(size: fontSize(for: size)))
+        }
+        
+        if card.isFaceUp || !card.isMatched {
+            if EmojiMemoryGame.currentTheme?.color == nil {
+                cardView
+                    .cardifyFilledWith(gradientColor, isFaceUp: card.isFaceUp)
+            } else {
+                cardView
+                    .cardify(isFaceUp: card.isFaceUp)
             }
         }
-        //.aspectRatio(2/3, contentMode: .fill)
-        .font(.system(size: fontSize(for: size)))
     }
     
     //MARK: - Drawing Constants
-    
-    let cornerRadius: CGFloat = 10.0
-    let edgeLineWidth: CGFloat = 3.0
+
     func fontSize(for size: CGSize) -> CGFloat {
-        min(size.height, size.width) * 0.75
+        min(size.height, size.width) * 0.65
     }
+    let gradientColor = LinearGradient(gradient: Gradient(colors: [.red, .blue]), startPoint: .top, endPoint: .trailing)
+    private(set) var pieCounter = Pie(startAngle: Angle.degrees(0-90), endAngle: Angle.degrees(110-90), clockWise: true)
+    let pieOpacity = 0.4
+    let piePadding: CGFloat = 5.0
 }
 
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
-            EmojiMemoryGameView(viewModel: EmojiMemoryGame())
-        }
+        let game = EmojiMemoryGame()
+        game.choose(card: game.cards[0])
+        return EmojiMemoryGameView(viewModel: game)
     }
 }

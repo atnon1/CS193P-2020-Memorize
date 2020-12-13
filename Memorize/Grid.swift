@@ -2,14 +2,15 @@
 //  Grid.swift
 //  Memorize
 //
-//  Created by Admin on 05.12.2020.
+//  Created by Anton Makeev on 05.12.2020.
 //
 
 import SwiftUI
 
 struct Grid<Item: Identifiable, ItemView: View>: View {
-    var items: [Item]
-    var viewForItem: (Item) -> ItemView
+    private var items: [Item]
+    private var viewForItem: (Item) -> ItemView
+    
     init(_ items: [Item], viewForItem: @escaping (Item) -> ItemView) {
         self.items = items
         self.viewForItem = viewForItem

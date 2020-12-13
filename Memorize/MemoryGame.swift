@@ -2,16 +2,16 @@
 //  MemoryGame.swift
 //  Memorize
 //
-//  Created by Admin on 08.12.2020.
+//  Created by Anton Makeev on 08.12.2020.
 //
 
 import Foundation
 
 struct MemoryGame<CardContent: Equatable> {
     
-    var cards: Array<Card>
+    private(set) var cards: Array<Card>
 
-    var indexOnlyFaceUpCard: Int? {
+    private var indexOnlyFaceUpCard: Int? {
         get {
             cards.indices.filter { cards[$0].isFaceUp }.only
         }
@@ -30,11 +30,11 @@ struct MemoryGame<CardContent: Equatable> {
       
     var score = 0
     var firstCardOpenTime: Date?
-    var timeSpent: Int {
+    var timeSpent: Double {
         if let startCounting = firstCardOpenTime {
-            return Int(startCounting.distance(to: Date()))
+            return startCounting.distance(to: Date())
         } else {
-            return 0
+            return 0.0
         }
     }
     
@@ -50,7 +50,14 @@ struct MemoryGame<CardContent: Equatable> {
                 if cards[matchingIndex].content == cards[alreadyFaceUpCardIndex].content {
                     cards[matchingIndex].isMatched = true
                     cards[alreadyFaceUpCardIndex].isMatched = true
-                    score += max(-1, 10 - timeSpent)
+                    switch timeSpent {
+                    case 0.0...5.0:
+                        score += Int((5.0 - timeSpent)/0.5)
+                    case 5.0...10.0:
+                        score += 1
+                    default:
+                        score -= 1
+                    }
                 } else {
                     // If card at `idx` is faced up and have already been seen and not matched then reduce score
                         score -= (cards[alreadyFaceUpCardIndex].haveAlreadyBeenSeen ? 1 : 0)
