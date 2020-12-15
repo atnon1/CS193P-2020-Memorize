@@ -18,8 +18,8 @@ struct EmojiMemoryGameView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(smallPadding)
-                .font(.title)
                 .layoutPriority(lowPriority)
+                .animation(nil)
             
             (Text("Time: \(viewModel.timeSpent, specifier: "%.1f")s    ")
                 .font(.title) +
@@ -28,7 +28,7 @@ struct EmojiMemoryGameView: View {
                 )
             .padding(smallPadding)
             .layoutPriority(lowPriority)
-            
+
             
             Grid(viewModel.cards) { card in
                 CardView(card: card).onTapGesture {
@@ -89,6 +89,10 @@ struct EmojiMemoryGameView: View {
 
 }
 
+
+// Most complication are defined by Extra credit task - availability of gradient;
+// Filling with gradient can be only provided on shapes, not `some View`, that's why we need to define it right at the shape creation
+
 struct CardView: View {
     var card: MemoryGame<String>.Card
     
@@ -126,7 +130,12 @@ struct CardView: View {
                         self.startBonusTimeAnimation()
                     }
                 } else {
-                    Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-card.bonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
+                    if EmojiMemoryGame.currentTheme?.color == nil {
+                        Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-card.bonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
+                            .fill(gradientColor)
+                    } else {
+                        Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-card.bonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
+                    }
                 }
             }
             .padding(piePadding)

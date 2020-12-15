@@ -26,7 +26,7 @@ struct Cardify: AnimatableModifier {
     var angularGradient: AngularGradient?
     var color: Color?
 
-    
+    // Complication mostly defined by Extra credit task - To add gradient filling
     func body(content: Content) -> some View {
         ZStack{
             if let filling = color {
