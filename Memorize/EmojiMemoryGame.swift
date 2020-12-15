@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+// TODO: Move struct to another file. Fix init (move color, closer to the end)
 struct MemoryGameTheme<Content> {
     var name: String
     var color: Color?

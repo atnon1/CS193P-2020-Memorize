@@ -50,14 +50,17 @@ struct MemoryGame<CardContent: Equatable> {
                 if cards[matchingIndex].content == cards[alreadyFaceUpCardIndex].content {
                     cards[matchingIndex].isMatched = true
                     cards[alreadyFaceUpCardIndex].isMatched = true
-                    switch timeSpent {
+                    /*switch timeSpent {
                     case 0.0...5.0:
                         score += Int((5.0 - timeSpent)/0.5)
                     case 5.0...10.0:
                         score += 1
                     default:
                         score -= 1
-                    }
+                    }*/
+                    
+                    // Linear dependance of bonus on the time
+                    score += Int((Double(cards[matchingIndex].maxBonus) * cards[matchingIndex].bonusRemaining) + (Double(cards[alreadyFaceUpCardIndex].maxBonus) *  cards[alreadyFaceUpCardIndex].bonusRemaining))
                 } else {
                     // If card at `idx` is faced up and have already been seen and not matched then reduce score
                         score -= (cards[alreadyFaceUpCardIndex].haveAlreadyBeenSeen ? 1 : 0)
@@ -107,6 +110,10 @@ struct MemoryGame<CardContent: Equatable> {
         var content: CardContent
         var id: Int
         
+        // Defines maximum bonus avaliable for a card
+        var maxBonus: Int {
+            Int(bonusTimeLimit)
+        }
         // MARK: - Bonus Time
         // this could give matching bonus points
         // if the user matches the card
@@ -155,11 +162,6 @@ struct MemoryGame<CardContent: Equatable> {
             pastFaceUpTime = faceUpTime
             self.lastFaceUpDate = nil
         }
-        
-        
-        
-        
-        
         
     }
 }

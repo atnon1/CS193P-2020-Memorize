@@ -116,17 +116,17 @@ struct CardView: View {
                 if card.isConsumingBonusTime {
                     Group {
                         if EmojiMemoryGame.currentTheme?.color == nil {
-                            Pie(startAngle: Angle.degrees(0-90), endAngle: Angle.degrees(-animatedBonusRemaining*360-90), clockWise: true)
+                            Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-animatedBonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
                                 .fill(gradientColor)
                         } else {
-                            Pie(startAngle: Angle.degrees(0-90), endAngle: Angle.degrees(-animatedBonusRemaining*360-90), clockWise: true)
+                            Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-animatedBonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
                         }
                     }
                     .onAppear {
                         self.startBonusTimeAnimation()
                     }
                 } else {
-                    Pie(startAngle: Angle.degrees(0-90), endAngle: Angle.degrees(-card.bonusRemaining*360-90), clockWise: true)
+                    Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-card.bonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
                 }
             }
             .padding(piePadding)
@@ -136,7 +136,7 @@ struct CardView: View {
             Text(card.content)
                 .font(.system(size: fontSize(for: size)))
                 .rotationEffect(Angle.degrees(card.isMatched ? cardMatchRotationDegree : cardDefaultRotationDegree))
-                .animation(card.isMatched ? Animation.linear.repeatForever(autoreverses: false) : .default)
+                .animation(card.isMatched ? Animation.linear(duration: cardMatchAnimationDuration).repeatForever(autoreverses: false) : .default)
         }
         
         if card.isFaceUp || !card.isMatched {
@@ -159,10 +159,14 @@ struct CardView: View {
         min(size.height, size.width) * 0.65
     }
     let gradientColor = LinearGradient(gradient: Gradient(colors: [.red, .blue]), startPoint: .top, endPoint: .trailing)
+    let pieStartAngleDegrees: Double = 0
+    let pieFullEndAngleDegrees: Double = 360
+    let pieDegreesOffset: Double = -90
     let pieOpacity: Double = 0.4
     let piePadding: CGFloat = 5.0
     let cardMatchRotationDegree: Double = 360
     let cardDefaultRotationDegree: Double = 0
+    let cardMatchAnimationDuration: Double = 1
 }
 
 
