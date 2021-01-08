@@ -17,10 +17,12 @@ class EmojiMemoryGame: ObservableObject {
         currentTheme = themes.randomElement()
         let theme = currentTheme!
         let emojis = theme.contentSet.shuffled()
-        let pairsCount = theme.cardPairsNumber ?? Int.random(in: 2 ..< min(emojis.count, 14))
-        return MemoryGame<String>(numberOfPairsOfCards: pairsCount ) { pairIndex in
+        let pairsCount = theme.cardPairsNumber //?? Int.random(in: 2 ..< min(emojis.count, 14))
+        let game = MemoryGame<String>(numberOfPairsOfCards: pairsCount ) { pairIndex in
                 return emojis[pairIndex]
         }
+        print("Theme json: \(theme.json?.utf8 ?? "nil")")
+        return game
     }
     
     // MARK: - Access to the Model

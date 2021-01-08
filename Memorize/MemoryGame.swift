@@ -38,7 +38,7 @@ struct MemoryGame<CardContent: Equatable> {
         }
     }
     
-    // Turns `card` on another side and checks for match already opendd card;
+    // Turns `card` on another side and checks for match already opened card;
     // counts score
     mutating func choose(_ card: Card) {
         print("Card chosen is: \(card)")

@@ -8,19 +8,25 @@
 import SwiftUI
 
 // TODO: Move struct to another file. Fix init (move color, closer to the end)
-struct MemoryGameTheme<Content> {
+struct MemoryGameTheme<Content:Codable>: Codable {
     var name: String
-    var color: Color?
+    var colorRGB: UIColor.RGB
+    var color: Color {
+        return Color(colorRGB)
+    }
     var contentSet: [Content]
-    var cardPairsNumber: Int?
-    init (_ name: String, contentSet: [Content], color: Color? = nil, cardPairsNumber: Int? = nil) {
+    var cardPairsNumber: Int
+    init (_ name: String, contentSet: [Content], color: UIColor? = nil, cardPairsNumber: Int? = nil) {
         self.name = name
-        self.color = color
+        self.colorRGB = color?.rgb ?? UIColor.black.rgb
         self.contentSet = contentSet
-        self.cardPairsNumber = cardPairsNumber
+        self.cardPairsNumber = cardPairsNumber ?? 6
+    }
+    
+    var json: Data? {
+        return try? JSONEncoder().encode(self)
     }
 }
-
 
 var themes = [
     MemoryGameTheme("Halloween",
