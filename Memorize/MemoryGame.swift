@@ -88,7 +88,7 @@ struct MemoryGame<CardContent: Equatable> {
         }
         cards.shuffle() // Shuffles inline
     }
-
+    
     struct Card: Identifiable {
         var isFaceUp: Bool = false {
             didSet {

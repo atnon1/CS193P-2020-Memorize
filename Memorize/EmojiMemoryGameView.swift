@@ -9,18 +9,12 @@ import SwiftUI
 
 struct EmojiMemoryGameView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
+
     
     var body: some View {
         let defaultColor: Color = (colorScheme == ColorScheme.dark ? .black : .white)
         let oppositeDefaultColor: Color = (colorScheme == ColorScheme.dark ? .white : .black)
-        VStack {
-            Text(EmojiMemoryGame.currentTheme?.name ?? "Memorize")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(smallPadding)
-                .layoutPriority(lowPriority)
-                .animation(nil)
-            
+        VStack {            
             (Text("Time: \(viewModel.timeSpent, specifier: "%.1f")s    ")
                 .font(.title) +
             Text("Score: \(viewModel.score)")
@@ -31,7 +25,7 @@ struct EmojiMemoryGameView: View {
 
             
             Grid(viewModel.cards) { card in
-                CardView(card: card).onTapGesture {
+                CardView(card: card, color: viewModel.currentTheme?.color).onTapGesture {
                     withAnimation(.linear(duration: cardFlipAnimationSpeed)){
                         viewModel.choose(card: card)
                     }
@@ -40,7 +34,7 @@ struct EmojiMemoryGameView: View {
                 .padding(cardsPadding)
             }
             .padding(smallPadding)
-            .foregroundColor( EmojiMemoryGame.currentTheme?.color ?? defaultColor)
+            .foregroundColor( viewModel.currentTheme?.color ?? defaultColor)
             .layoutPriority(highPriority)
             
             Button(action: {
@@ -51,7 +45,7 @@ struct EmojiMemoryGameView: View {
                 Text("New game")
                     .fontWeight(.bold)
                     .padding()
-                    .background(EmojiMemoryGame.currentTheme?.color ?? oppositeDefaultColor)
+                    .background(viewModel.currentTheme?.color ?? oppositeDefaultColor)
                     .foregroundColor(defaultColor)
                     .font(.title)
                     .cornerRadius(buttonCornerRadius)
@@ -62,7 +56,7 @@ struct EmojiMemoryGameView: View {
                     .padding(buttonDrawPadding)
                     .overlay(
                         RoundedRectangle(cornerRadius: buttonOuterCornerRadius)
-                            .stroke(EmojiMemoryGame.currentTheme?.color ?? oppositeDefaultColor, lineWidth: buttonStrokeWidth)
+                            .stroke(viewModel.currentTheme?.color ?? oppositeDefaultColor, lineWidth: buttonStrokeWidth)
                         )
                     .padding(.bottom)
             })
@@ -95,7 +89,7 @@ struct EmojiMemoryGameView: View {
 
 struct CardView: View {
     var card: MemoryGame<String>.Card
-    
+    var color: Color?
     var body: some View {
         GeometryReader { geometry in
             body(for: geometry.size)
@@ -118,8 +112,40 @@ struct CardView: View {
         let cardView = ZStack {
             Group {
                 if card.isConsumingBonusTime {
+                    Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-animatedBonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
+                    .onAppear {
+                        self.startBonusTimeAnimation()
+                    }
+                } else {
+                    Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-card.bonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
+                    }
+            }
+            .padding(piePadding)
+            .opacity(pieOpacity)
+            .transition(.identity)
+            
+            Text(card.content)
+                .font(.system(size: fontSize(for: size)))
+                .rotationEffect(Angle.degrees(card.isMatched ? cardMatchRotationDegree : cardDefaultRotationDegree))
+                .animation(card.isMatched ? Animation.linear(duration: cardMatchAnimationDuration).repeatForever(autoreverses: false) : .default)
+        }
+        
+        if card.isFaceUp || !card.isMatched {
+            cardView
+                .cardify(isFaceUp: card.isFaceUp)
+                .transition(AnyTransition.scale)
+        }
+    }
+    
+    /* // old version with gradient
+    @ViewBuilder
+    private func body(for size: CGSize) -> some View {
+        
+        let cardView = ZStack {
+            Group {
+                if card.isConsumingBonusTime {
                     Group {
-                        if EmojiMemoryGame.currentTheme?.color == nil {
+                        if color == nil {
                             Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-animatedBonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
                                 .fill(gradientColor)
                         } else {
@@ -130,7 +156,7 @@ struct CardView: View {
                         self.startBonusTimeAnimation()
                     }
                 } else {
-                    if EmojiMemoryGame.currentTheme?.color == nil {
+                    if color == nil {
                         Pie(startAngle: Angle.degrees(pieStartAngleDegrees + pieDegreesOffset), endAngle: Angle.degrees(-card.bonusRemaining * pieFullEndAngleDegrees + pieDegreesOffset), clockWise: true)
                             .fill(gradientColor)
                     } else {
@@ -150,7 +176,7 @@ struct CardView: View {
         
         if card.isFaceUp || !card.isMatched {
             Group {
-                if EmojiMemoryGame.currentTheme?.color == nil {
+                if color == nil {
                     cardView
                         .cardify(withFilling: gradientColor, isFaceUp: card.isFaceUp)
                 } else {
@@ -161,6 +187,7 @@ struct CardView: View {
             .transition(AnyTransition.scale)
         }
     }
+ */
     
     //MARK: - Drawing Constants
 

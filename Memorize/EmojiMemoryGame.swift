@@ -7,22 +7,29 @@
 
 import SwiftUI
 
+
+// Declares alias globally to use in the whole project
+typealias EmojiMemoryGameTheme = MemoryGameTheme<String>
+
 class EmojiMemoryGame: ObservableObject {
-    @Published private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
+    @Published private var model: MemoryGame<String>
     
-    // We use statuc var to be able to check color to replace with gradient in View
-    static var currentTheme: MemoryGameTheme<String>?
+    var currentTheme: EmojiMemoryGameTheme?
     
-    private static func createMemoryGame() -> MemoryGame<String> {
-        currentTheme = themes.randomElement()
-        let theme = currentTheme!
-        let emojis = theme.contentSet.shuffled()
-        let pairsCount = theme.cardPairsNumber //?? Int.random(in: 2 ..< min(emojis.count, 14))
+    private static func createMemoryGame(theme: EmojiMemoryGameTheme?) -> MemoryGame<String> {
+        let currentTheme = theme ?? EmojiMemoryGameTheme.initialEmojiThemes.randomElement()!
+        let emojis = currentTheme.contentSet.shuffled()
+        let pairsCount = currentTheme.cardPairsNumber
         let game = MemoryGame<String>(numberOfPairsOfCards: pairsCount ) { pairIndex in
                 return emojis[pairIndex]
         }
-        print("Theme json: \(theme.json?.utf8 ?? "nil")")
+        print("Theme json: \(currentTheme.json?.utf8 ?? "nil")")
         return game
+    }
+    
+    init(theme: EmojiMemoryGameTheme? = nil) {
+        currentTheme = theme
+        model = EmojiMemoryGame.createMemoryGame(theme: theme)
     }
     
     // MARK: - Access to the Model
@@ -44,7 +51,7 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func resetGame() {
-        self.model = EmojiMemoryGame.createMemoryGame()
+        model = EmojiMemoryGame.createMemoryGame(theme: currentTheme)
     }
     
 }

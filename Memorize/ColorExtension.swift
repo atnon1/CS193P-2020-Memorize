@@ -31,5 +31,8 @@ extension UIColor {
         getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         return RGB(red: red, green: green, blue: blue, alpha: alpha)
     }
+    
+    static let schoolBusYellow = UIColor(Color("SchoolBusYellow"))
+    static let pink = UIColor(red: 0.9999999403953552, green: 0.1764705777168274, blue: 0.3333333134651184, alpha: 1.0)
 }
 
