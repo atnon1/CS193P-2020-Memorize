@@ -13,4 +13,5 @@ App's capabilities:
 
 
 Issues:
-1. To bright colors in menu
+1. Too bright colors in menu
+1. Too long view definitions
